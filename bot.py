@@ -10,7 +10,7 @@ def get_text_messages(message):
         bot.send_message(message.from_user.id, "Напиши привет")
     elif message.text == "/start":
         bot.send_message(message.from_user.id, "Привет! Я чат-бот Колледжа связи №54 ОП-5")
-        bot.send_message(message.from_user.id, "Здесь ты сможешь заполнить анкету для поступления, ")
+        bot.send_message(message.from_user.id, "Здесь ты сможешь заполнить анкету для поступления, узнать про специальности нашего подразделения, ")
     else:
         bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help.")
         
