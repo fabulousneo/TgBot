@@ -18,9 +18,22 @@ def start(message):
 def func(message):
     if(message.text == "👋 Поздороваться"):
         bot.send_message(message.chat.id, text="whats uuuuuuuppppppppppp!!!!!!maaaaaaan!!!!!)")
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("Заполнить анкету")
+        btn2 = types.KeyboardButton("Подробнее о специальностях")
+        btn3 = types.KeyboardButton("Что - то будет")
+        back = types.KeyboardButton("Вернуться в главное меню")
+        markup.add(btn1, btn2, btn3, back) 
+        bot.send_message(message.chat.id, text="Выбери чем хочешь заняться)", reply_markup=markup)
     elif message.text == "/help":
         bot.send_message(message.from_user.id, "Пока ничего нету")
+    elif (message.text == "Вернуться в главное меню"):
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("👋 Поздороваться")
+        markup.add(btn1)
+        bot.send_message(message.chat.id, text="Вы вернулись в главное меню", reply_markup=markup)
     else:
         bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help.")
         
+
 bot.polling(none_stop=True, interval=0)
