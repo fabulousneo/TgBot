@@ -17,7 +17,7 @@ def start(message):
 @bot.message_handler(content_types=['text'])
 def func(message):
     if(message.text == "👋 Поздороваться"):
-        bot.send_message(message.chat.id, text="Привеет..!)")
+        bot.send_message(message.chat.id, text="whats uuuuuuuppppppppppp!!!!!!maaaaaaan!!!!!)")
     elif message.text == "/help":
         bot.send_message(message.from_user.id, "Пока ничего нету")
     else:
