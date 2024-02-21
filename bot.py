@@ -4,10 +4,12 @@ import time;
 
 bot = telebot.TeleBot('6842550234:AAEMaf-fHRaMudvrE6lPaWCtAqVe2-wTKf4')
 
+
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton("👋 Поздороваться")
+    btn2 = types.KeyboradButton("Регистрация ")
     markup.add(btn1)
     time.sleep(1)
     bot.send_message(message.chat.id, text="Привет, {0.first_name}! Я чат-бот Колледжа связи №54 ОП-5".format(message.from_user), reply_markup=markup)
@@ -34,6 +36,33 @@ def func(message):
         bot.send_message(message.chat.id, text="Вы вернулись в главное меню", reply_markup=markup)
     else:
         bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help.")
-        
 
+name = '';
+age = 0;
+surname = '';
+@bot.message_handler(content_types=['text'])
+def start(message):
+    if message.text == '/reg':
+        bot.send_message(message.from_user.id, "Как тебя зовут?")
+        bot.register_next_step_handler(message,get_name); #следующий шаг функция get_name
+    else:
+        bot.send_message(message.from_user.id, "Напиши /reg");
+def get_name(message):
+    global name;
+    name = message.text;
+    bot.send_message(message.from_user.id, "Какая у тебя фамлиия?");
+    bot.register_next_step_handler(message.get_surname);
+def get_surname(message):
+    global surname;
+    surname = message.text;
+    bot.send_message("сколько тебе лет? ");
+    bot.register_next_step_handler(message, get_age);
+def get_age(message):
+    global age;
+    while age ==0:
+        try:
+            age = int(message.text)
+        except Exception:
+            bot.sende_message(message.from_user.id, "Цифрами пожалуйста!");
+        bot.send_message(message.from_user.id, "Тебе" + str(age) + " лет, тебя зовут " + name + " " + surname + "?")
 bot.polling(none_stop=True, interval=0)
