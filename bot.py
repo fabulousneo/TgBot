@@ -32,8 +32,6 @@ def func(message):
         btn1 = types.KeyboardButton("👋 Поздороваться")
         markup.add(btn1)
         bot.send_message(message.chat.id, text="Вы вернулись в главное меню", reply_markup=markup)
-    else:
-        bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help.")
         
 
 bot.polling(none_stop=True, interval=0)
