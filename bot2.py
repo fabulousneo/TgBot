@@ -31,6 +31,9 @@ def message (message):
     else:
         bot.send_message(message.chat.id, text= "Вы ничего не выбрали, сделайте выбор!")
 
+@bot.message_handler(content_types=['text'])
+def func(message):
+    
 
 
 bot.polling(none_stop=True)
