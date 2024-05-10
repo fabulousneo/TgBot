@@ -1,39 +1,68 @@
-import telebot
-from telebot import types
+from telebot import TeleBot
+import sqlite3
 
-bot = telebot.TeleBot ('7074490969:AAG6NZ22f0TOLTVhP_pKdXV2gxleK-KdEhs') # токен.
+# Подключение к базе данных
+conn = sqlite3.connect('database.db')
+cursor = conn.cursor()
 
+# Создание таблиц, если они еще не существуют
+cursor.execute('''CREATE TABLE IF NOT EXISTS users (
+                     id INT PRIMARY KEY,
+                     firstname TEXT,
+                     lastname TEXT,
+                     username TEXT
+                )''')
 
+# Функция для регистрации пользователя
+def register_user(firstname, lastname, username):
+    cursor.execute("INSERT INTO users (id, firstname, lastname, username) VALUES (?, ?, ?, ?)",
+                   (None, firstname, lastname, username))
+    conn.commit()
+
+# Функция для получения информации о пользователе
+def get_user_info(user_id):
+    cursor.execute("SELECT * FROM users WHERE id=?", (user_id,))
+    return cursor.fetchone()
+
+# Создание экземпляра бота
+bot = telebot.TeleBot ('7074490969:AAG6NZ22f0TOLTVhP_pKdXV2gxleK-KdEhs')
+
+# Обработка команды /start
 @bot.message_handler(commands=['start'])
+def send_welcome(message):
+    bot.reply_to(message, 'Привет! Я могу помочь тебе с выбором профессии. Начни с введения своих данных.')
 
-def start(message):
-    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-    btn1 = types.KeyboardButton("Начать!")
-    name = f'Привет, <b>{message.from_user.first_name} <u>{message.from_user.last_name}</u>. Это бот колледжа связи №54. Данный бот предоставляет возможность пройти профориентацию и узнать какое направление подойдет именно тебе!</b>'
-    markup.add(btn1)
-    bot.send_message(message.chat.id, name, parse_mode='html', reply_markup=markup)
+# Обработка команды /register
+@bot.message_handler(commands=['register'])
+def process_register(message):
+    first_name = message.chat.first_name
+    last_name = message.chat.last_name
+    username = message.chat.username
+    user_id = message.chat.id
 
-@bot.message_handler(content_types=['text'])
-def message (message):
-    if  message.text == ('Начать!'):
-        markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-        btn1 = types.KeyboardButton("Информационные системы и программирование")
-        btn2 = types.KeyboardButton("Обеспечение информационной безопасности телекоммуникационных систем")
-        btn3 = types.KeyboardButton("Обеспечение информационной безопасности автоматизированных систем")
-        markup.add(btn1, btn2, btn3)
-        bot.send_message(message.chat.id, text ="Выбери специальность, которая тебя привлекает: ", reply_markup=markup)
-    elif message.text == "Информационные системы и программирование":
-        bot.send_message(message.chat.id, text='Вы выбрали информационные системы и программирование')
-    elif message.text == "Обеспечение информационной безопасности телекоммуникационных систем":
-        bot.send_message(message.chat.id, text="Вы выбрали обеспечение информационной безопасности телекоммуникационных систем")
-    elif message.text == "Обеспечение информационной безопасности автоматизированных систем":
-        bot.send_message(message.chat.id, text = "Вы выбрали обеспечение информационной безопасности автоматизированных систем")
+    # Регистрация пользователя
+    register_user(first_name, last_name, username)
+
+    # Отправка подтверждения регистрации
+    bot.reply_to(message, f'Ваш аккаунт успешно создан, {first_name}! Теперь мы можем начать профориентацию.')
+
+# Обработка команды /prof
+@bot.message_handler(commands=['prof'])
+def start_prof(message):
+    user_data = get_user_info(message.chat.id)
+    if user_data is not None:
+        firstname = user_data[1]
+        lastname = user_data[2]
+        username = user_data[3]
+        bot.reply_to(message, f'Здравствуйте, {firstname} {lastname}! Давайте начнем профориентацию.')
     else:
-        bot.send_message(message.chat.id, text= "Вы ничего не выбрали, сделайте выбор!")
+        bot.reply_to(message, 'Пожалуйста, зарегистрируйтесь сначала.')
 
+# Обработка команд для проведения профориентации
 @bot.message_handler(content_types=['text'])
-def func(message):
-    
+def prof_chat(message):
+     
+    pass
 
-
-bot.polling(none_stop=True)
+# Запуск бота
+bot.infinity_polling()
